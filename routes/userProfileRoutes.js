@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { protect } from "../middleware/authMiddleware.js";
+import  Router  from "express";
+import  protect  from "../middleware/authMiddleware.js";
 import {
   getUserProfile,
   updateUserProfile,

@@ -1,4 +1,4 @@
-import { Event } from "../models/eventModel.js";
+import  Event  from "../models/eventModel.js";
 
 // Assign an umpire to an event
 exports.assignUmpireToEvent = async (req, res) => {

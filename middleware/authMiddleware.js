@@ -1,5 +1,5 @@
-import { verify } from "jsonwebtoken";
-import { User } from "../models/userModel.js";
+import  verify  from "jsonwebtoken";
+import  User  from "../models/userModel.js";
 
 // Protect routes by checking if the user is authenticated
 exports.protect = async (req, res, next) => {
@@ -30,4 +30,4 @@ exports.adminOnly = (req, res, next) => {
   }
 };
 
-export default {protect,adminOnly};
+// export default {protect,adminOnly};

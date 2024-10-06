@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { protect } from "../middleware/authMiddleware.js";
+import  Router  from "express";
+import  protect  from "../middleware/authMiddleware.js";
 import { addScore, getMatchScore } from "../controllers/scoreController.js";
 
 const router = express.Router();

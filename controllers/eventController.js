@@ -1,4 +1,4 @@
-import { Event } from "../models/eventModel.js";
+import  Event  from "../models/eventModel.js";
 
 // Create an event (Organizers only)
 exports.createEvent = async (req, res) => {

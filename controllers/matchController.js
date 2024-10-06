@@ -1,4 +1,4 @@
-import { Match } from "../models/matchModel.js";
+import  Match  from "../models/matchModel.js";
 
 // Create a match (Organizer)
 exports.createMatch = async (req, res) => {

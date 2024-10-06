@@ -1,4 +1,4 @@
-import { User } from "../models/userModel.js";
+import  User  from "../models/userModel.js";
 
 // Verify organizer by admin
 exports.verifyOrganizer = async (req, res) => {

@@ -1,4 +1,4 @@
-import { Router } from "express";
+import  Router  from "express";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 import { verifyOrganizer, verifyUmpire } from "../controllers/adminController.js";
 

@@ -1,4 +1,4 @@
-import { Score } from "../models/scoreModel.js";
+import  Score  from "../models/scoreModel.js";
 
 // Add score for a match (Umpire)
 exports.addScore = async (req, res) => {
