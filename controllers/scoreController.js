@@ -1,7 +1,7 @@
 import  Score  from "../models/scoreModel.js";
 
 // Add score for a match (Umpire)
-exports.addScore = async (req, res) => {
+export const addScore = async (req, res) => {
   const { match_id, player1_score, player2_score } = req.body;
 
   try {
@@ -19,7 +19,7 @@ exports.addScore = async (req, res) => {
 };
 
 // Get score for a match
-exports.getMatchScore = async (req, res) => {
+export const getMatchScore = async (req, res) => {
   const { matchId } = req.params;
 
   try {

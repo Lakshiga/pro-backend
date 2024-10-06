@@ -1,7 +1,7 @@
 import  Event  from "../models/eventModel.js";
 
 // Create an event (Organizers only)
-exports.createEvent = async (req, res) => {
+export const createEvent = async (req, res) => {
   const { event_name, event_date, location } = req.body;
 
   try {
@@ -20,7 +20,7 @@ exports.createEvent = async (req, res) => {
 };
 
 // Fetch all active events (Players can view)
-exports.getActiveEvents = async (req, res) => {
+export const getActiveEvents = async (req, res) => {
   try {
     const events = await Event.find({ status: "active" });
     res.json(events);
@@ -30,7 +30,7 @@ exports.getActiveEvents = async (req, res) => {
 };
 
 // Apply for an event (Players)
-exports.applyForEvent = async (req, res) => {
+export const applyForEvent = async (req, res) => {
   const { eventId } = req.params;
 
   try {
@@ -49,7 +49,7 @@ exports.applyForEvent = async (req, res) => {
 };
 
 // Verify players for an event (Organizers)
-exports.verifyPlayerForEvent = async (req, res) => {
+export const verifyPlayerForEvent = async (req, res) => {
   const { eventId, playerId } = req.params;
 
   try {

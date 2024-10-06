@@ -1,7 +1,7 @@
 import  User  from "../models/userModel.js";
 
 // Get user profile
-exports.getUserProfile = async (req, res) => {
+export const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
     res.json(user);
@@ -11,7 +11,7 @@ exports.getUserProfile = async (req, res) => {
 };
 
 // Update user profile (e.g., Organizer updates their profile)
-exports.updateUserProfile = async (req, res) => {
+export const updateUserProfile = async (req, res) => {
   const { name, email } = req.body;
 
   try {

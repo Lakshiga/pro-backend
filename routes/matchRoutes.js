@@ -1,5 +1,5 @@
 import  Router  from "express";
-import  protect  from "../middleware/authMiddleware.js";
+import { protect}  from "../middleware/authMiddleware.js";
 import {
   createMatch,
   getMatchesForEvent,
@@ -10,7 +10,7 @@ import {
   updateMatch,
 } from "../controllers/matchController.js";
 
-const router = express.Router();
+const router = Router();
 
 // Match management
 router.post("/create", protect, createMatch); // Organizer creates a match

@@ -1,8 +1,4 @@
-import  verify  from "jsonwebtoken";
-import  User  from "../models/userModel.js";
-
-// Protect routes by checking if the user is authenticated
-exports.protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
   let token;
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -22,12 +18,10 @@ exports.protect = async (req, res, next) => {
   }
 };
 
-exports.adminOnly = (req, res, next) => {
+export const adminOnly = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
     next();
   } else {
     res.status(403).json({ message: 'Admin access only' });
   }
 };
-
-// export default {protect,adminOnly};

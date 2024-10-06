@@ -1,7 +1,7 @@
 import  User  from "../models/userModel.js";
 
 // Verify organizer by admin
-exports.verifyOrganizer = async (req, res) => {
+export const verifyOrganizer = async (req, res) => {
   const { userId } = req.params;
 
   try {
@@ -19,7 +19,7 @@ exports.verifyOrganizer = async (req, res) => {
 };
 
 // Verify umpire by admin
-exports.verifyUmpire = async (req, res) => {
+export const verifyUmpire = async (req, res) => {
   const { userId } = req.params;
 
   try {

@@ -1,7 +1,7 @@
 import  Event  from "../models/eventModel.js";
 
 // Assign an umpire to an event
-exports.assignUmpireToEvent = async (req, res) => {
+export const assignUmpireToEvent = async (req, res) => {
   const { eventId } = req.params;
   const { umpireId } = req.body;
 
