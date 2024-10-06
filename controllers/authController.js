@@ -1,8 +1,8 @@
 import User from "../models/userModel.js";
-
+import jwt from "jsonwebtoken"
 // Generate JWT Token
 const generateToken = (id) => {
-  return sign({ id }, process.env.JWT_SECRET, { expiresIn: "5h" });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "5h" });
 };
 
 // Register user
@@ -32,6 +32,7 @@ export async function login(req, res) {
       _id: user._id,
       username: user.username,
       role: user.role,
+      verified:user.verified,
       token: generateToken(user._id),
     });
   } else {
