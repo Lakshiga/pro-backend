@@ -1,13 +1,13 @@
-import { Schema, model } from "mongoose";
+const mongoose = require('mongoose');
 
-const eventSchema = new Schema({
-  event_name: { type: String, required: true },
-  event_date: { type: Date, required: true },
-  location: { type: String, required: true },
-  organizer_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  umpire_ids: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  players_applied: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  status: { type: String, enum: ["active", "completed"], default: "active" },
+const eventSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  date: { type: Date, required: true },
+  sport: { type: String, required: true },
+  ageGroup: { type: String, required: true },
+  matchType: { type: String, enum: ['knockout', 'league'], required: true },
+  players: [{ type: String, required: true }], // Array of player names
+  matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }],
 });
 
-export default model("Event", eventSchema);
+module.exports = mongoose.model('Event', eventSchema);

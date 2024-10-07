@@ -8,7 +8,6 @@ import {
 } from "../controllers/eventController.js";
 
 const router = Router();
-
 router.post("/create", protect, createEvent); // Organizer creates an event
 router.get("/active", protect, getActiveEvents); // Player fetches active events
 router.post("/:eventId/apply", protect, applyForEvent); // Player applies for an event
