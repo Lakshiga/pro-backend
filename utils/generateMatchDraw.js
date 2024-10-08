@@ -1,7 +1,7 @@
-const { createCanvas } = require('canvas');
-const fs = require('fs');
+import  createCanvas  from 'canvas';
+import fs from 'fs';
 
-function generateMatchDraw(matches, eventName) {
+export function generateMatchDraw(matches, eventName) {
   const canvas = createCanvas(800, 600);
   const context = canvas.getContext('2d');
 
@@ -24,9 +24,11 @@ function generateMatchDraw(matches, eventName) {
 
   // Save the image as PNG
   const buffer = canvas.toBuffer('image/png');
-  fs.writeFileSync(`./match_draws/${eventName.replace(/\s+/g, '_')}_draw.png`, buffer);
+  const filePath = `./match_draws/${eventName.replace(/\s+/g, '_')}_draw.png`;
+
+  // Ensure the directory exists before writing
+  fs.mkdirSync('./match_draws', { recursive: true });
+  fs.writeFileSync(filePath, buffer);
 
   console.log('Match draw image created successfully!');
 }
-
-module.exports = generateMatchDraw;

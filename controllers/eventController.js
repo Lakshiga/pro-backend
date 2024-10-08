@@ -1,24 +1,25 @@
 import Event from "../models/eventModel.js"; // Import the Event model
+import Match  from "../models/matchModel.js"; // Adjust based on actual export
+import { generateMatchDraw }  from '../utils/generateMatchDraw.js'; // Ensure this is correct as well
 
-// Helper functions for draw generation
-const generateKnockoutDraw = (players) => {
-  let shuffledPlayers = [...players].sort(() => 0.5 - Math.random());
-  let matches = [];
-  for (let i = 0; i < shuffledPlayers.length; i += 2) {
-    if (i + 1 < shuffledPlayers.length) {
-      matches.push(`${shuffledPlayers[i]} vs ${shuffledPlayers[i + 1]}`);
-    }
-  }
-  return matches;
-};
-
-const generateLeagueDraw = (players) => {
+// Helper function to generate matches based on match type
+const generateMatches = (players, matchType, eventId) => {
   const matches = [];
-  const numPlayers = players.length;
 
-  for (let i = 0; i < numPlayers; i++) {
-    for (let j = i + 1; j < numPlayers; j++) {
-      matches.push(`${players[i]} vs ${players[j]}`);
+  if (matchType === 'league') {
+    // For league format: Each player plays against each other
+    for (let i = 0; i < players.length; i++) {
+      for (let j = i + 1; j < players.length; j++) {
+        matches.push({ player1: players[i], player2: players[j], event: eventId });
+      }
+    }
+  } else if (matchType === 'knockout') {
+    // For knockout format: Pair players sequentially
+    let shuffledPlayers = [...players].sort(() => 0.5 - Math.random());
+    for (let i = 0; i < shuffledPlayers.length; i += 2) {
+      if (shuffledPlayers[i + 1]) { // Ensure there's a second player
+        matches.push({ player1: shuffledPlayers[i], player2: shuffledPlayers[i + 1], event: eventId });
+      }
     }
   }
 
@@ -27,35 +28,35 @@ const generateLeagueDraw = (players) => {
 
 // Create an event (Organizers only)
 export const createEvent = async (req, res) => {
-  const { event_name, event_date, location, players, matchType } = req.body;
+  const { name, date, sport, ageGroup, matchType, players } = req.body;
 
-  // Validate request body
-  if (!event_name || !event_date || !location || !players || !matchType) {
-    return res.status(400).json({ message: 'Please fill all fields' });
+  // Validate input
+  if (!name || !date || !sport || !ageGroup || !matchType || !players || players.length < 2) {
+    return res.status(400).json({ message: 'Invalid input' });
   }
 
   try {
-    // Generate draw based on match type
-    let draw;
-    if (matchType === 'knockout') {
-      draw = generateKnockoutDraw(players);
-    } else {
-      draw = generateLeagueDraw(players);
-    }
+    // Create the event
+    const newEvent = new Event({ name, date, sport, ageGroup, matchType, players });
+    await newEvent.save();
 
-    // Create a new event document
-    const event = await Event.create({
-      event_name,
-      event_date,
-      location,
-      organizer_id: req.user._id, // Assuming req.user contains the authenticated user
-      players_applied: [],
-      umpire_ids: [],
-      status: "active",
-      draw // Add the generated draw to the event document
-    });
+    // Generate matches
+    const matches = generateMatches(players, matchType, newEvent._id);
+    await Match.insertMany(matches);
 
-    res.status(201).json(event);
+    // Add matches to the event
+    newEvent.matches = matches.map(match => match._id);
+    await newEvent.save();
+
+    // Generate the match draw image and save it
+    const matchDrawImagePath = `./match_draws/${name.replace(/\s+/g, '_')}_draw.png`;
+    await generateMatchDraw(matches, matchDrawImagePath); // Pass matches and name to your function
+
+    // Save the path of the match draw image to the event
+    newEvent.matchDraw = matchDrawImagePath;
+    await newEvent.save();
+
+    res.status(201).json({ message: 'Event created successfully', event: newEvent });
   } catch (error) {
     console.error('Error creating event:', error);
     res.status(500).json({ message: 'Server error' });
@@ -68,6 +69,7 @@ export const getActiveEvents = async (req, res) => {
     const events = await Event.find({ status: "active" });
     res.json(events);
   } catch (error) {
+    console.error('Error fetching events:', error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -87,6 +89,7 @@ export const applyForEvent = async (req, res) => {
 
     res.json({ message: "Applied to event successfully" });
   } catch (error) {
+    console.error('Error applying for event:', error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -105,6 +108,7 @@ export const verifyPlayerForEvent = async (req, res) => {
       res.status(400).json({ message: "Player has not applied for this event" });
     }
   } catch (error) {
+    console.error('Error verifying player:', error);
     res.status(400).json({ message: error.message });
   }
 };
