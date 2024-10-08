@@ -13,9 +13,10 @@ export const createMatch = async (req, res) => {
       match_date
     });
 
-    res.status(201).json(match);
+    await match.save();
+    res.status(201).json({ message: 'Match created successfully', match });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: 'Error creating match', error });
   }
 };
 
