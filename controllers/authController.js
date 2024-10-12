@@ -32,7 +32,7 @@ export async function login(req, res) {
       _id: user._id,
       username: user.username,
       role: user.role,
-      verified:user.verified,
+      verified:user.isVerified,
       token: generateToken(user._id),
     });
   } else {
