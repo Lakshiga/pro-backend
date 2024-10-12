@@ -1,10 +1,9 @@
-import Router from "express";
-import { protect, adminOnly } from "../middleware/authMiddleware.js";
-import { verifyOrganizer, getAllUsers } from "../controllers/adminController.js";
+import express from 'express';
+import { verifyOrganizer, getAllUsers } from '../controllers/adminController.js';
 
-const router = Router();
+const router = express.Router();
 
-router.get("/users", protect, adminOnly, getAllUsers); // Get all users
-router.post("/verify-organizer/:userId", protect, adminOnly, verifyOrganizer); // Admin verifies organizer
+router.get('/users', getAllUsers);
+router.post('/verify-organizer/:id', verifyOrganizer); // Ensure it's a POST request for verification
 
 export default router;

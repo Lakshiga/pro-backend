@@ -10,10 +10,9 @@ const userSchema = new Schema({
     enum: ["organizer", "player", "umpire"],
     required: true,
   },
-  verified: { type: Boolean, default: false },
+  isVerified: { type: Boolean, default: false }, // Ensure this field exists
 });
 
-// Hash password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
