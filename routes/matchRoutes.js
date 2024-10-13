@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { protect } from "../middleware/authMiddleware";
+import  Router  from "express";
+import { protect}  from "../middleware/authMiddleware.js";
 import {
   createMatch,
   getMatchesForEvent,
@@ -8,9 +8,9 @@ import {
   addScoreToMatch,
   getMatchScores,
   updateMatch,
-} from "../controllers/matchController";
+} from "../controllers/matchController.js";
 
-const router = express.Router();
+const router = Router();
 
 // Match management
 router.post("/create", protect, createMatch); // Organizer creates a match
@@ -25,4 +25,4 @@ router.get("/:matchId/score", protect, getMatchScores); // Organizer/Umpire gets
 // Organizer can update match details (reschedule, assign umpire, etc.)
 router.put("/:matchId/update", protect, updateMatch);
 
-module.exports = router;
+export default router;

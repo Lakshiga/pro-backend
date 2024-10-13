@@ -1,7 +1,7 @@
-import { Match } from "../models/matchModel";
+import  Match  from "../models/matchModel.js";
 
 // Create a match (Organizer)
-exports.createMatch = async (req, res) => {
+export const createMatch = async (req, res) => {
   const { event_id, player1_id, player2_id, umpire_id, match_date } = req.body;
 
   try {
@@ -13,14 +13,15 @@ exports.createMatch = async (req, res) => {
       match_date
     });
 
-    res.status(201).json(match);
+    await match.save();
+    res.status(201).json({ message: 'Match created successfully', match });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: 'Error creating match', error });
   }
 };
 
 // Get all matches for an event
-exports.getMatchesForEvent = async (req, res) => {
+export const getMatchesForEvent = async (req, res) => {
   const { eventId } = req.params;
 
   try {
@@ -32,7 +33,7 @@ exports.getMatchesForEvent = async (req, res) => {
 };
 
 // Assign players to a match (Organizer)
-exports.assignPlayersToMatch = async (req, res) => {
+export const assignPlayersToMatch = async (req, res) => {
   const { matchId, player1_id, player2_id } = req.body;
 
   try {
@@ -50,7 +51,7 @@ exports.assignPlayersToMatch = async (req, res) => {
 };
 
 // Get a specific match by ID
-exports.getMatchById = async (req, res) => {
+export const getMatchById = async (req, res) => {
   const { matchId } = req.params;
 
   try {
@@ -66,7 +67,7 @@ exports.getMatchById = async (req, res) => {
 };
 
 // Umpire adds score to a match
-exports.addScoreToMatch = async (req, res) => {
+export const addScoreToMatch = async (req, res) => {
   const { matchId } = req.params;
   const { score, comments } = req.body;
 
@@ -87,7 +88,7 @@ exports.addScoreToMatch = async (req, res) => {
 };
 
 // Organizer or Umpire gets scores for a match
-exports.getMatchScores = async (req, res) => {
+export const getMatchScores = async (req, res) => {
   const { matchId } = req.params;
 
   try {
@@ -103,7 +104,7 @@ exports.getMatchScores = async (req, res) => {
 };
 
 // Organizer can update match details (e.g., reschedule, change umpire)
-exports.updateMatch = async (req, res) => {
+export const updateMatch = async (req, res) => {
   const { matchId } = req.params;
   const { umpire_id, match_date } = req.body;
 
