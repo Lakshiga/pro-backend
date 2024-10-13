@@ -1,81 +1,36 @@
-import Event from "../models/eventModel.js"; // Import the Event model
-import Match  from "../models/matchModel.js"; // Adjust based on actual export
-import { generateMatchDraw }  from '../utils/generateMatchDraw.js'; // Ensure this is correct as well
-
-// Helper function to generate matches based on match type
-const generateMatches = (players, matchType, eventId) => {
-  const matches = [];
-
-  if (matchType === 'league') {
-    // For league format: Each player plays against each other
-    for (let i = 0; i < players.length; i++) {
-      for (let j = i + 1; j < players.length; j++) {
-        matches.push({ player1: players[i], player2: players[j], event: eventId });
-      }
-    }
-  } else if (matchType === 'knockout') {
-    // For knockout format: Pair players sequentially
-    let shuffledPlayers = [...players].sort(() => 0.5 - Math.random());
-    for (let i = 0; i < shuffledPlayers.length; i += 2) {
-      if (shuffledPlayers[i + 1]) { // Ensure there's a second player
-        matches.push({ player1: shuffledPlayers[i], player2: shuffledPlayers[i + 1], event: eventId });
-      }
-    }
-  }
-
-  return matches;
-};
+import { Event } from "../models/eventModel";
 
 // Create an event (Organizers only)
-export const createEvent = async (req, res) => {
-  const { name, date, sport, ageGroup, matchType, players } = req.body;
-
-  // Validate input
-  if (!name || !date || !sport || !ageGroup || !matchType || !players || players.length < 2) {
-    return res.status(400).json({ message: 'Invalid input' });
-  }
+exports.createEvent = async (req, res) => {
+  const { event_name, event_date, location } = req.body;
 
   try {
-    // Create the event
-    const newEvent = new Event({ name, date, sport, ageGroup, matchType, players });
-    await newEvent.save();
+    const event = await Event.create({
+      event_name,
+      event_date,
+      location,
+      organizer_id: req.user._id,
+      status: "active",
+    });
 
-    // Generate matches
-    const matches = generateMatches(players, matchType, newEvent._id);
-    await Match.insertMany(matches);
-
-    // Add matches to the event
-    newEvent.matches = matches.map(match => match._id);
-    await newEvent.save();
-
-    // Generate the match draw image and save it
-    const matchDrawImagePath = `./match_draws/${name.replace(/\s+/g, '_')}_draw.png`;
-    await generateMatchDraw(matches, matchDrawImagePath); // Pass matches and name to your function
-
-    // Save the path of the match draw image to the event
-    newEvent.matchDraw = matchDrawImagePath;
-    await newEvent.save();
-
-    res.status(201).json({ message: 'Event created successfully', event: newEvent });
+    res.status(201).json(event);
   } catch (error) {
-    console.error('Error creating event:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(400).json({ message: error.message });
   }
 };
 
 // Fetch all active events (Players can view)
-export const getActiveEvents = async (req, res) => {
+exports.getActiveEvents = async (req, res) => {
   try {
     const events = await Event.find({ status: "active" });
     res.json(events);
   } catch (error) {
-    console.error('Error fetching events:', error);
     res.status(400).json({ message: error.message });
   }
 };
 
 // Apply for an event (Players)
-export const applyForEvent = async (req, res) => {
+exports.applyForEvent = async (req, res) => {
   const { eventId } = req.params;
 
   try {
@@ -89,13 +44,12 @@ export const applyForEvent = async (req, res) => {
 
     res.json({ message: "Applied to event successfully" });
   } catch (error) {
-    console.error('Error applying for event:', error);
     res.status(400).json({ message: error.message });
   }
 };
 
 // Verify players for an event (Organizers)
-export const verifyPlayerForEvent = async (req, res) => {
+exports.verifyPlayerForEvent = async (req, res) => {
   const { eventId, playerId } = req.params;
 
   try {
@@ -105,10 +59,11 @@ export const verifyPlayerForEvent = async (req, res) => {
     if (event.players_applied.includes(playerId)) {
       res.json({ message: `Player ${playerId} verified for event` });
     } else {
-      res.status(400).json({ message: "Player has not applied for this event" });
+      res
+        .status(400)
+        .json({ message: "Player has not applied for this event" });
     }
   } catch (error) {
-    console.error('Error verifying player:', error);
     res.status(400).json({ message: error.message });
   }
 };
