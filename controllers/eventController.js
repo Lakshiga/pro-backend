@@ -67,3 +67,14 @@ export const verifyPlayerForEvent = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+export const getEventsByOrganizer = async (req, res) => {
+  const organizerId = req.user._id;
+
+  try {
+    const events = await Event.find({ organizer_id: organizerId });
+    res.json(events);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
