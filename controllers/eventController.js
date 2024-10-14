@@ -2,13 +2,16 @@ import Event from "../models/eventModel.js";
 
 // Create an event (Organizers only)
 export const createEvent = async (req, res) => {
-  const { event_name, event_date, location } = req.body;
+  const { name, date, sport, ageGroup, matchType, players } = req.body;
 
   try {
     const event = await Event.create({
-      event_name,
-      event_date,
-      location,
+      name,
+      date,
+      sport,
+      ageGroup,
+      matchType,
+      players,
       organizer_id: req.user._id,
       status: "active",
     });
