@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
+app.use("/api/admin", adminRoutes); 
 app.use("/api/event", eventRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/score", scoreRoutes);
