@@ -83,3 +83,14 @@ export const getEventsByOrganizer = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+export const getEventsByEventId = async (req, res) => {
+  const {eventId} = req.params;
+
+  try {
+    const events = await Event.find({ _id: eventId });
+    res.json(events);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
