@@ -6,25 +6,35 @@ export const protect = async (req, res, next) => {
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
+      // Extract the token
       token = req.headers.authorization.split(' ')[1];
+      
+      // Verify token and decode user information
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+      // Attach user information to request object
       req.user = await User.findById(decoded.id).select('-password');
-      next();
+
+      // Proceed to next middleware
+      return next();
     } catch (error) {
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      // Handle invalid token
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }
 
+  // Handle missing token
   if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 
 export const adminOnly = (req, res, next) => {
+  // Check if user is admin
   if (req.user && req.user.role === 'admin') {
-    next();
+    return next();
   } else {
-    res.status(403).json({ message: 'Admin access only' });
+    // Handle non-admin access attempt
+    return res.status(403).json({ message: 'Admin access only' });
   }
 };
