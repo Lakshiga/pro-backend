@@ -2,16 +2,20 @@ import express from "express";
 import { config } from "dotenv";
 import { connect } from "mongoose";
 import bodyParser from "body-parser";
-import authRoutes from "./routes/authRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js"; // Importing admin
-import eventRoutes from './routes/eventRoutes.js'; // Importing event
-import matchRoutes from './routes/matchRoutes.js'; // Importing
-import scoreRoutes from './routes/scoreRoutes.js'; // Importing
-import umpireRoutes from './routes/umpireRoutes.js'; // Importing
-import userProfileRoutes from './routes/userProfileRoutes.js'; // Importing user
 import cors from "cors";
+import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js"; 
+import eventRoutes from './routes/eventRoutes.js'; 
+import matchRoutes from './routes/matchRoutes.js'; 
+import scoreRoutes from './routes/scoreRoutes.js'; 
+import umpireRoutes from './routes/umpireRoutes.js'; 
+import userProfileRoutes from './routes/userProfileRoutes.js'; 
+import paymentRoutes from './routes/paymentRoutes.js';
+import Stripe from "stripe";
 
 config();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);  // Stripe initialized here
+
 const app = express();
 
 app.use(cors());
@@ -25,6 +29,7 @@ app.use("/api/match", matchRoutes);
 app.use("/api/score", scoreRoutes);
 app.use("/api/umpire", umpireRoutes);
 app.use("/api/user-profile", userProfileRoutes);
+app.use('/api/payments', paymentRoutes);  // Your payment routes should use the stripe instance
 
 // MongoDB Connection
 connect(process.env.MONGO_URI, {
