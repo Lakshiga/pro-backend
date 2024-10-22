@@ -11,10 +11,8 @@ import scoreRoutes from './routes/scoreRoutes.js';
 import umpireRoutes from './routes/umpireRoutes.js'; 
 import userProfileRoutes from './routes/userProfileRoutes.js'; 
 import paymentRoutes from './routes/paymentRoutes.js';
-import Stripe from "stripe";
 
 config();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);  // Stripe initialized here
 
 const app = express();
 

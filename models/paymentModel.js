@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+import { Schema, model } from "mongoose";
 
 const paymentSchema = new Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
@@ -52,6 +52,5 @@ paymentSchema.pre('save', function(next) {
   next();
 });
 
-const Payment = mongoose.model('Payment', paymentSchema);
+export default model('Payment', paymentSchema);
 
-export default Payment;

@@ -1,5 +1,8 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const Payment = require('../Models/paymentModel');
+import Stripe from 'stripe';
+import Payment from '../models/paymentModel.js';
+
+// Initialize Stripe with your secret key
+const stripe = new Stripe('sk_test_51QBrrwHbve0bLiRTWUuz7F8nGK4yn8JpqQXRhH3rWwsvIbQ0rqvAahKJtBOcgosQYdQKjQJ1KAlrJc6NNCSoBFfH004JQOEquw');
 
 const plans = {
   monthly: {
@@ -12,14 +15,20 @@ const plans = {
   },
 };
 
-exports.createPaymentIntent = async (req, res) => {
+// Create a PaymentIntent for the selected plan
+const createPaymentIntent = async (req, res) => {
   const { plan, userId } = req.body;
 
   try {
+    // Ensure the plan is valid
+    if (!plans[plan]) {
+      return res.status(400).send({ error: 'Invalid plan selected' });
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: plans[plan].amount,
       currency: plans[plan].currency,
-      metadata: { userId, plan },
+      metadata: { userId, plan }, // Attach user and plan info to metadata
     });
 
     res.send({
@@ -31,35 +40,55 @@ exports.createPaymentIntent = async (req, res) => {
   }
 };
 
-exports.handlePaymentSuccess = async (req, res) => {
+const handlePaymentSuccess = async (req, res) => {
   const { paymentIntentId } = req.body;
 
   try {
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-    const { userId, plan } = paymentIntent.metadata;
+      if (!paymentIntentId || !paymentIntentId.startsWith('pi_')) {
+          return res.status(400).send({ error: 'Invalid PaymentIntent ID provided' });
+      }
 
-    const payment = new Payment({
-      userId,
-      plan,
-      amount: paymentIntent.amount,
-      currency: paymentIntent.currency,
-      paymentIntentId,
-      status: 'succeeded',
-    });
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
-    await payment.save();
+      // Log the status for debugging
+      console.log('Payment Intent Status:', paymentIntent.status);
 
-    res.status(200).send({ message: 'Payment recorded successfully' });
+      // Handle different payment intent statuses
+      if (paymentIntent.status === 'requires_payment_method') {
+          return res.status(400).send({
+              error: `Payment not successful. Current status: ${paymentIntent.status}. Please provide a valid payment method.`
+          });
+      } else if (paymentIntent.status !== 'succeeded') {
+          return res.status(400).send({ error: `Payment not successful. Current status: ${paymentIntent.status}` });
+      }
+
+      const { userId, plan } = paymentIntent.metadata;
+
+      const payment = new Payment({
+          userId,
+          plan,
+          amount: paymentIntent.amount,
+          currency: paymentIntent.currency,
+          paymentIntentId,
+          status: paymentIntent.status,
+      });
+
+      await payment.save();
+
+      return res.status(200).send({ message: 'Payment recorded successfully', payment });
   } catch (error) {
-    console.error('Error handling payment success:', error);
-    res.status(500).send({ error: 'Failed to record payment' });
+      console.error('Error handling payment success:', error);
+      return res.status(500).send({ error: 'Failed to record payment', details: error.message });
   }
 };
 
-exports.getSubscriptionStatus = async (req, res) => {
+
+// Get subscription status for a user by userId
+const getSubscriptionStatus = async (req, res) => {
   const { userId } = req.params;
 
   try {
+    // Find the most recent payment for the user
     const latestPayment = await Payment.findOne({ userId }).sort({ createdAt: -1 });
 
     if (!latestPayment) {
@@ -77,4 +106,11 @@ exports.getSubscriptionStatus = async (req, res) => {
     console.error('Error getting subscription status:', error);
     res.status(500).send({ error: 'Failed to get subscription status' });
   }
+};
+
+// Export all functions as default object
+export default {
+  createPaymentIntent,
+  handlePaymentSuccess,
+  getSubscriptionStatus,
 };
