@@ -35,7 +35,6 @@ const paymentSchema = new Schema({
   },
   expiresAt: {
     type: Date,
-    required: true,
   },
 });
 
@@ -53,4 +52,3 @@ paymentSchema.pre('save', function(next) {
 });
 
 export default model('Payment', paymentSchema);
-

@@ -17,8 +17,9 @@ const plans = {
 
 // Create a PaymentIntent for the selected plan
 const createPaymentIntent = async (req, res) => {
-  const { plan, userId } = req.body;
-
+  const { plan } = req.body;
+  const userId = req.user._id.toString();
+  
   try {
     // Ensure the plan is valid
     if (!plans[plan]) {
