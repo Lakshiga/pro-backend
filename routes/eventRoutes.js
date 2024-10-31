@@ -19,6 +19,6 @@ router.post("/:eventId/apply", protect, applyForEvent); // Player applies for an
 router.post("/:eventId/verify/:playerId", protect, verifyPlayerForEvent); // Organizer verifies players
 router.get("/getEventsByOrganizer", protect, getEventsByOrganizer);
 router.get("/getEventsByEventId/:eventId",getEventsByEventId);
-router.post('/events/:eventId/generate-matches',generateMatches);
+router.post('/:eventId/generate-matches',generateMatches);
 
 export default router; // Use export default for your router
