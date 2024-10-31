@@ -7,7 +7,6 @@ const eventSchema = new Schema({
   ageGroup: { type: String, required: true },
   matchType: { type: String, enum: ['knockout', 'league'], required: true },
   players: [{ type: String, required: true }], // Array of player names
-  matches: [{ type: Schema.Types.ObjectId, ref: 'Match' }],
   organizer_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
   umpire_ids: [{ type: Schema.Types.ObjectId, ref: "User" }],
   status: { type: String, enum: ["active", "completed"], default: "active" },

@@ -1,4 +1,5 @@
 import Event from "../models/eventModel.js";
+import Match from "../models/matchModel.js";
 
 
 // Create an event (Organizers only)
@@ -92,5 +93,49 @@ export const getEventsByEventId = async (req, res) => {
     res.json(events);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+export const generateMatches =async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    
+    const event = await Event.findById(eventId);
+    if (!event || !event.players || event.players.length < 2 || !event.umpire_ids || event.umpire_ids.length === 0) {
+      return res.status(404).json({ error: "Event not found, not enough players, or no umpires assigned" });
+    }
+
+    const shuffledPlayers = event.players.sort(() => 0.5 - Math.random());
+    const matchPairs = [];
+
+    for (let i = 0; i < shuffledPlayers.length; i += 2) {
+      if (i + 1 < shuffledPlayers.length) {
+        matchPairs.push([shuffledPlayers[i], shuffledPlayers[i + 1]]);
+      }
+    }
+
+    const getRandomUmpire = () => {
+      const randomIndex = Math.floor(Math.random() * event.umpire_ids.length);
+      return event.umpire_ids[randomIndex];
+    };
+
+    const createdMatches = [];
+    for (const [player1, player2] of matchPairs) {
+      const match = new Match({
+        event_id: event._id,
+        player1_id: player1,
+        player2_id: player2,
+        umpire_id: getRandomUmpire(),
+        match_date: event.date,
+        status: 'scheduled',
+      });
+      await match.save();
+      createdMatches.push(match);
+    }
+
+    res.status(201).json({ message: "Matches created successfully", matches: createdMatches });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to generate matches" });
   }
 };
