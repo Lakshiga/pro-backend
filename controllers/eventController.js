@@ -42,8 +42,8 @@ export const applyForEvent = async (req, res) => {
     const event = await Event.findById(eventId);
     if (!event) return res.status(404).json({ message: "Event not found" });
 
-    if (!event.players_applied.includes(req.user._id)) {
-      event.players_applied.push(req.user._id);
+    if (!event.players.includes(req.user._id)) {
+      event.players.push(req.user._id);
       await event.save();
     }
 
@@ -61,7 +61,7 @@ export const verifyPlayerForEvent = async (req, res) => {
     const event = await Event.findById(eventId);
     if (!event) return res.status(404).json({ message: "Event not found" });
 
-    if (event.players_applied.includes(playerId)) {
+    if (event.players.includes(playerId)) {
       res.json({ message: `Player ${playerId} verified for event` });
     } else {
       res

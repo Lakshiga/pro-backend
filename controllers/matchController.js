@@ -50,6 +50,21 @@ export const assignPlayersToMatch = async (req, res) => {
   }
 };
 
+
+
+export const getMatchesForPlayer = async (req, res) => {
+  const { playerId } = req.user._id.toString();
+
+  try {
+    const matches = await Match.find({
+      $or: [{ player1_id: playerId }, { player2_id: playerId }],
+    });
+    res.json(matches);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 // Get a specific match by ID
 export const getMatchById = async (req, res) => {
   const { matchId } = req.params;

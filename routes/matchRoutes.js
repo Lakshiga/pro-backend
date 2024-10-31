@@ -4,10 +4,12 @@ import {
   createMatch,
   getMatchesForEvent,
   assignPlayersToMatch,
+  getMatchesForPlayer,
   getMatchById,
   addScoreToMatch,
   getMatchScores,
-  updateMatch,
+  updateMatch
+  ,
 } from "../controllers/matchController.js";
 
 const router = Router();
@@ -16,7 +18,7 @@ const router = Router();
 router.post("/create", protect, createMatch); // Organizer creates a match
 router.get("/event/:eventId", protect, getMatchesForEvent); // Organizer gets matches for an event
 router.post("/assign", protect, assignPlayersToMatch); // Organizer assigns players to a match
-
+router.get("/match-player", protect, getMatchesForPlayer);
 // Match details and score management
 router.get("/:matchId", protect, getMatchById); // Get match details by ID
 router.put("/:matchId/score", protect, addScoreToMatch); // Umpire adds score to match
