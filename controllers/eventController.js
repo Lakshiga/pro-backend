@@ -28,8 +28,15 @@ console.log(req.body);
 // Fetch all active events (Players can view)
 export const getActiveEvents = async (req, res) => {
   try {
+    const playerId = req.user._id;
     const events = await Event.find({ status: "active" });
-    res.json(events);
+
+    const eventsWithIsApplied = events.map(event => ({
+      ...event.toObject(),
+      isApplied: event.players.includes(playerId)
+    }));
+
+    res.json(eventsWithIsApplied);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -43,9 +50,16 @@ export const applyForEvent = async (req, res) => {
     const event = await Event.findById(eventId);
     if (!event) return res.status(404).json({ message: "Event not found" });
 
-    if (!event.players.includes(req.user._id)) {
-      event.players.push(req.user._id);
-      await event.save();
+    if (req.user.role == "umpire") {
+      if (!event.umpire_ids.includes(req.user._id)) {
+        event.umpire_ids.push(req.user._id);
+        await event.save();
+      }
+    } else if (req.user.role == "player") {
+      if (!event.players.includes(req.user._id)) {
+        event.players.push(req.user._id);
+        await event.save();
+      }
     }
 
     res.json({ message: "Applied to event successfully" });

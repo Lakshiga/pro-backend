@@ -13,4 +13,6 @@ router.post('/payment-success', paymentController.handlePaymentSuccess);
 // Route to get subscription status
 router.get('/subscription-status/:userId', paymentController.getSubscriptionStatus);
 
+router.get('/subscription-status',protect, paymentController.getSubscriptionStatus);
+
 export default router;

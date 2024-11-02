@@ -58,3 +58,30 @@ export const getPlayersByIds = async (req, res) => {
   }
 };
 
+
+export const getumpiresByIds = async (req, res) => {
+  const { umpireIds } = req.body;
+
+  try {
+    const umpires = await User.find({
+      _id: { $in: umpireIds },
+      role: "umpire",
+    });
+
+    if (!umpires.length) {
+      return res.status(404).json({ message: "No umpires found" });
+    }
+    
+    const umpireDetails = umpires.map((umpire) => ({
+      id: umpire._id,
+      username: umpire.username,
+      email: umpire.email,
+      isVerified: umpire.isVerified,
+      role: umpire.role,
+    }));
+
+    res.json(umpireDetails);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
