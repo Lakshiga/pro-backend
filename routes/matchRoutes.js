@@ -2,7 +2,7 @@ import  Router  from "express";
 import { protect}  from "../middleware/authMiddleware.js";
 import {
   createMatch,
-  getMatchesForEvent,
+ getMatchesForEvent,
   assignPlayersToMatch,
   getMatchesForPlayer,
   getMatchById,
