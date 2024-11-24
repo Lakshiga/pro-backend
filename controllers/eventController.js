@@ -153,3 +153,24 @@ export const generateMatches =async (req, res) => {
     res.status(500).json({ error: "Failed to generate matches" });
   }
 };
+
+export const getMatches = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    // Find matches for the specified event ID
+    const matches = await Match.find({ event_id: eventId }).select(
+      'event_id player1_id player2_id umpire_id match_date status'
+    );
+
+    if (matches.length === 0) {
+      return res.status(404).json({ error: "No matches found for the specified event" });
+    }
+
+    // Return matches in the response
+    res.status(200).json({ matches });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch matches" });
+  }
+};

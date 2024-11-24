@@ -109,11 +109,30 @@ const getSubscriptionStatus = async (req, res) => {
   }
 };
 
+const getAllPayments = async (req, res) => {
+  try {
+    // Fetch all payments and populate the user details
+    const payments = await Payment.find()
+      .sort({ createdAt: -1 })
+      .populate('userId', 'username');
+
+    if (!payments.length) {
+      return res.status(404).send({ error: 'No payments found' });
+    }
+
+    res.status(200).send(payments);
+  } catch (error) {
+    console.error('Error getting all payments with user details:', error);
+    res.status(500).send({ error: 'Failed to get payments' });
+  }
+};
+
 // Export all functions as default object
 export default {
   createPaymentIntent,
   handlePaymentSuccess,
   getSubscriptionStatus,
+  getAllPayments
 };
 
 

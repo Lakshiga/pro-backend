@@ -8,6 +8,7 @@ import {
   getEventsByOrganizer,
   getEventsByEventId,
   generateMatches,
+  getMatches
 } from "../controllers/eventController.js";
 
 const router = express.Router();
@@ -20,5 +21,6 @@ router.post("/:eventId/verify/:playerId", protect, verifyPlayerForEvent); // Org
 router.get("/getEventsByOrganizer", protect, getEventsByOrganizer);
 router.get("/getEventsByEventId/:eventId",getEventsByEventId);
 router.post('/:eventId/generate-matches',generateMatches);
+router.post('/:eventId/get-matches',getMatches);
 
 export default router; // Use export default for your router

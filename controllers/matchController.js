@@ -51,18 +51,23 @@ export const assignPlayersToMatch = async (req, res) => {
 };
 
 
-
 export const getMatchesForPlayer = async (req, res) => {
-  const { playerId } = req.user._id.toString();
-
   try {
+    const playerId = req.user._id.toString();
+
+    // Fetch matches and populate related fields
     const matches = await Match.find({
       $or: [{ player1_id: playerId }, { player2_id: playerId }],
-    });
+    })
+      .populate("event_id", "name") // Populate the event name
+      .populate("player1_id", "username") // Populate player1 name
+      .populate("player2_id", "username")
+      .populate("umpire_id", "username"); // Populate player2 name
+
     res.json(matches);
   } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
+    res.status(400).json({ message: error.message });
+  }
 };
 
 // Get a specific match by ID

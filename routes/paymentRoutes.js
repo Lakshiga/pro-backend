@@ -15,4 +15,6 @@ router.get('/subscription-status/:userId', paymentController.getSubscriptionStat
 
 router.get('/subscription-status',protect, paymentController.getSubscriptionStatus);
 
+router.get('/getAllPayments', paymentController.getAllPayments);
+
 export default router;
